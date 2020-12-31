@@ -6,6 +6,11 @@
 using namespace std;
 
 namespace robot{
+
+    bool is_reversed(int x){
+        return x < 0;
+    }
+
     struct baseStruct{
         static pros::Motor RF, RM, RB, LF, LM, LB, RFT, RBT, LFT, LBT;
 
@@ -17,10 +22,6 @@ namespace robot{
         };
 
         style_e style = ERR;
-
-        bool is_reversed(uint8_t x){
-            return x < 0;
-        }
 
         /*
         * 4 motor drive base creation
@@ -146,7 +147,6 @@ namespace robot{
             }
         }
 
-
         //function that holds the motor position
         void brake() {
             switch(style){
@@ -204,8 +204,154 @@ namespace robot{
         }
     };
 
+    struct intakeStruct{
+        static pros::Motor LI, LIT, RI, RIT, TI, TIT;
+
+        void create(int top, pros::motor_gearset_e gearset){
+            pros::Motor TI(top, gearset, is_reversed(top));
+        }
+
+        void create(int left, int right, pros::motor_gearset_e gearset){
+            pros::Motor LI(left, gearset, is_reversed(left));
+            pros::Motor RI(right, gearset, is_reversed(right));
+        }
+
+        void create(int left, int right, int top, pros::motor_gearset_e gearset){
+            pros::Motor LI(left, gearset, is_reversed(left));
+            pros::Motor RI(right, gearset, is_reversed(right));
+            pros::Motor TI(top, gearset, is_reversed(top));
+        }
+
+        void create(int left, int leftT, int right, int rightT, pros::motor_gearset_e gearset){
+            pros::Motor LI(left, gearset, is_reversed(left));
+            pros::Motor LIT(leftT, gearset, is_reversed(leftT));
+            pros::Motor RI(right, gearset, is_reversed(right));
+            pros::Motor RIT(rightT, gearset, is_reversed(rightT));
+        }
+
+        void create(int left, int leftT, int right, int rightT, int top, pros::motor_gearset_e gearset){
+            pros::Motor LI(left, gearset, is_reversed(left));
+            pros::Motor LIT(leftT, gearset, is_reversed(leftT));
+            pros::Motor RI(right, gearset, is_reversed(right));
+            pros::Motor RIT(rightT, gearset, is_reversed(rightT));
+            pros::Motor TI(top, gearset, is_reversed(top));
+        }
+
+        void create(int left, int leftT, int right, int rightT, int top, int topT pros::motor_gearset_e gearset){
+            pros::Motor LI(left, gearset, is_reversed(left));
+            pros::Motor LIT(leftT, gearset, is_reversed(leftT));
+            pros::Motor RI(right, gearset, is_reversed(right));
+            pros::Motor RIT(rightT, gearset, is_reversed(rightT));
+            pros::Motor TI(top, gearset, is_reversed(top));
+            pros::Motor TIT(topT, gearset, is_reversed(topT));
+        }
+
+        void runSides(int power){
+            LI.move_voltage(power);
+            LIT.move_voltage(power);
+            RI.move_voltage(power);
+            RIT.move_voltage(power);
+        }
+
+        void runTop(int power){
+            TI.move_voltage(power);
+            TIT.move_voltage(power);
+        }
+
+        void runAll(int power){
+            runSides(power);
+            runTop(power);
+        }
+
+        void runAll(int sides, int top){
+            runSides(sides);
+            runTop(top);
+        }
+
+        void hold(){
+            LI.move_velocity(0);
+            LIT.move_velocity(0);
+            RI.move_velocity(0);
+            RIT.move_velocity(0);
+            TI.move_velocity(0);
+            TIT.move_velocity(0);
+
+            LI.set_brake_mode(MOTOR_BRAKE_HOLD);
+            LIT.set_brake_mode(MOTOR_BRAKE_HOLD);
+            RI.set_brake_mode(MOTOR_BRAKE_HOLD);
+            RIT.set_brake_mode(MOTOR_BRAKE_HOLD);
+            TI.set_brake_mode(MOTOR_BRAKE_HOLD);
+            TIT.set_brake_mode(MOTOR_BRAKE_HOLD);
+        }
+    };
+
+    struct conveyorStruct{
+        static pros::Motor C1, C2, C3, C4, C5, C6;
+
+        void create(int c1, int c2, pros::motor_gearset_e gearset){
+            pros::Motor C1(c1, gearset, is_reversed(c1));
+            pros::Motor C2(c2, gearset, is_reversed(c2));
+        }
+
+        void create(int c1, int c2, int c3, pros::motor_gearset_e gearset){
+            pros::Motor C1(c1, gearset, is_reversed(c1));
+            pros::Motor C2(c2, gearset, is_reversed(c2));
+            pros::Motor C3(c3, gearset, is_reversed(c3));
+        }
+
+        void create(int c1, int c2, int c3, int c4, pros::motor_gearset_e gearset){
+            pros::Motor C1(c1, gearset, is_reversed(c1));
+            pros::Motor C2(c2, gearset, is_reversed(c2));
+            pros::Motor C3(c3, gearset, is_reversed(c3));
+            pros::Motor C4(c4, gearset, is_reversed(c4));
+        }
+
+        void create(int c1, int c2, int c3, int c4, int c5, pros::motor_gearset_e gearset){
+            pros::Motor C1(c1, gearset, is_reversed(c1));
+            pros::Motor C2(c2, gearset, is_reversed(c2));
+            pros::Motor C3(c3, gearset, is_reversed(c3));
+            pros::Motor C4(c4, gearset, is_reversed(c4));
+            pros::Motor C5(c5, gearset, is_reversed(c5));
+        }
+
+        void create(int c1, int c2, int c3, int c4, int c5, int c6, pros::motor_gearset_e gearset){
+            pros::Motor C1(c1, gearset, is_reversed(c1));
+            pros::Motor C2(c2, gearset, is_reversed(c2));
+            pros::Motor C3(c3, gearset, is_reversed(c3));
+            pros::Motor C4(c4, gearset, is_reversed(c4));
+            pros::Motor C5(c5, gearset, is_reversed(c5));
+            pros::Motor C6(c6, gearset, is_reversed(c6));
+        }
+
+        void run(int power){
+            C1.move_voltage(power);
+            C2.move_voltage(power);
+            C3.move_voltage(power);
+            C4.move_voltage(power);
+            C5.move_voltage(power);
+            C6.move_voltage(power);
+        }
+
+        void hold(){
+            C1.move_velocity(0);
+            C2.move_velocity(0);
+            C3.move_velocity(0);
+            C4.move_velocity(0);
+            C5.move_velocity(0);
+            C6.move_velocity(0);
+
+            C1.set_brake_mode(MOTOR_BRAKE_HOLD);
+            C2.set_brake_mode(MOTOR_BRAKE_HOLD);
+            C3.set_brake_mode(MOTOR_BRAKE_HOLD);
+            C4.set_brake_mode(MOTOR_BRAKE_HOLD);
+            C5.set_brake_mode(MOTOR_BRAKE_HOLD);
+            C6.set_brake_mode(MOTOR_BRAKE_HOLD);
+        }
+    };
 };
 
+extern robot::conveyorStruct conveyors;
+extern robot::intakeStruct intakes;
 extern robot::baseStruct base;
 
 namespace motion{
@@ -343,8 +489,8 @@ namespace motion{
     extern bool init;
 
     void turnToPoint(double tx, double ty) {
-        double pow = turningPID.pidCalculate(atan(tx / ty), odom.a);
-        base.move(pow, -pow);
+      double pow = turningPID.pidCalculate(atan(tx / ty), odom.a);
+      base.move(pow, -pow);
     }
 
     double turnToPointHolo(double tx, double ty){
@@ -411,7 +557,7 @@ namespace motion{
 };
 
 namespace driverControl{
-    extern void intakes(void*);
+    extern void intakeControl(void*);
     extern void driveBase(void*);
 }
 

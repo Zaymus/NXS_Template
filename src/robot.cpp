@@ -6,6 +6,28 @@
 using namespace motion;
 using namespace robot;
 
+//conveyor system object declaration
+conveyorStruct conveyors;
+
+//conveyor system motor declaration
+pros::Motor conveyorStruct::C1(0);
+pros::Motor conveyorStruct::C2(0);
+pros::Motor conveyorStruct::C3(0);
+pros::Motor conveyorStruct::C4(0);
+pros::Motor conveyorStruct::C5(0);
+pros::Motor conveyorStruct::C6(0);
+
+//intake object declaration
+intakeStruct intakes;
+
+//intakes motor declaration
+pros::Motor intakeStruct::RI(0);
+pros::Motor intakeStruct::RIT(0);
+pros::Motor intakeStruct::LI(0);
+pros::Motor intakeStruct::LIT(0);
+pros::Motor intakeStruct::TI(0);
+pros::Motor intakeStruct::TIT(0);
+
 //base object declaration
 baseStruct base;
 
