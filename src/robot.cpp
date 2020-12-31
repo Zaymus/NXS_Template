@@ -26,6 +26,8 @@ pidStruct drivingPID;
 pidStruct turningPID;
 odomStruct odom;
 
+bool init = false;
+
 //odom variable initialization
 double odomStruct::wheelSize = 0;
 double odomStruct::distance_LR = 0;

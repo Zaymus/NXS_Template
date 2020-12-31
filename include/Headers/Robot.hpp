@@ -122,6 +122,31 @@ namespace robot{
             }
         }
 
+        void move(double h, int pow, int rot){
+            switch(style){
+                case QUAD:
+                    LF.move_voltage(pow * cos(h) + rot);
+                    LB.move_voltage(pow * sin(h) + rot);
+                    RF.move_voltage(pow * sin(h) - rot);
+                    RB.move_voltage(pow * cos(h) - rot);
+                    break;
+
+                case OCT:
+                    LF.move_voltage(pow * cos(h) + rot);
+                    LFT.move_voltage(pow * cos(h) + rot);
+                    LB.move_voltage(pow * sin(h) + rot);
+                    LBT.move_voltage(pow * sin(h) + rot);
+                    RF.move_voltage(pow * sin(h) - rot);
+                    RFT.move_voltage(pow * sin(h) - rot);
+                    RB.move_voltage(pow * cos(h) - rot);
+                    RBT.move_voltage(pow * cos(h) - rot);
+                    break;
+                default:
+                break;
+            }
+        }
+
+
         //function that holds the motor position
         void brake() {
             switch(style){
@@ -314,6 +339,75 @@ namespace motion{
     extern motion::pidStruct drivingPID;
     extern motion::pidStruct turningPID;
     extern motion::odomStruct odom;
+
+    extern bool init;
+
+    void turnToPoint(double tx, double ty) {
+        double pow = turningPID.pidCalculate(atan(tx / ty), odom.a);
+        base.move(pow, -pow);
+    }
+
+    double turnToPointHolo(double tx, double ty){
+        return turningPID.pidCalculate(atan(tx / ty), odom.a);
+    }
+
+    double driveToPoint(double sx, double sy, double tx, double ty){
+        double currDist = sqrt(pow((tx - odom.x), 2) + pow(ty - odom.y, 2));
+        double totalDist = sqrt(pow((tx - sx), 2) + pow(ty - sy, 2));
+        return drivingPID.pidCalculate(totalDist, currDist);
+    }
+
+    //function that moves a tank base to a coordinate
+    void autoDrive(double x, double y) {
+        if(!init){
+            turningPID.pidInit(0, 0, 0);
+            drivingPID.pidInit(0, 0, 0);
+            init = true;
+        }
+
+        int rotPow, pwr;
+        double difX, difY;
+        double sx = odom.x;
+        double sy = odom.y;
+
+        turnToPoint(x, y);
+        do {
+
+            difX = x - odom.x;
+            difY = y - odom.y;
+            pwr = driveToPoint(sx, sy, x, y);
+            rotPow = turnToPointHolo(x, y);
+
+            base.move(pwr + rotPow, pwr - rotPow);
+            pros::delay(5);
+        }while(fabs(difX <= 0.5) && fabs(difY <= 0.5));
+        base.brake();//holds the motor positions
+    }
+
+    //function that moves a holonomic base to a coordinate
+    void autoDrive(double x, double y, double a) {
+        if(!init){
+            turningPID.pidInit(0, 0, 0);
+            drivingPID.pidInit(0, 0, 0);
+            init = true;
+        }
+        double difX, difY, heading, pow, rot;
+        double sx = odom.x;
+        double sy = odom.y;
+
+        do {
+            difX = x - odom.x;
+            difY = y - odom.y;
+            heading = angleWrap(angleWrap(atan2(difX, difY)) - odom.a);
+            pow = driveToPoint(sx, sy, x, y);
+            rot = turnToPointHolo(x, y);
+
+
+            base.move(heading, pow, rot);
+            pros::delay(5);
+        }while(fabs(difX <= 0.5) && fabs(difY <= 0.5) && fabs(radToDeg(difA) <= ));
+        base.brake();//holds the motor positions
+    }
 };
 
 namespace driverControl{
